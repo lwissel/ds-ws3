@@ -1,0 +1,81 @@
+Data Structures End-Semester Assignment
+
+Student:    Lennart Wissel (ICY)
+Number:     1502856
+
+
+1) Quicksort
+
+a) Comparison of three strategies for choosing a pivot, portionsize >= 10.
+
+i) Rightmost entry
+   This is more or less equal to the simple 'take the first element' rule.
+   Assuming a statistical chaotic distribution of keys the average performance
+   will be quite fine. In practice however, you often face ordered or partially
+   ordered (or reverse ordered) portions where choosing the right (left)-most
+   key would end up in maximum performance setback. The algorithm would only
+   partition the chosen element from the rest of the portion ending up with
+   worst-case O(n^2) behaviour.
+
+ii) Median of three (left, mid, right)
+   The median of three elements {a, b, c} is defined as b, after ordering the
+   elements a <= b <= c. This means we have to add three more compare
+   operations and six assignments in worst-case to check which of the picked
+   elements is 'b'. Pseudocode (3! = 6 permutations are possible):
+   For any {a, b, c}
+      if (a > b) swap(a,b)
+      if (b > c) swap(b,c)
+      if (a > b) swap(a,b)
+   where swap(x,y) swaps the values of x and y. Then the pivot is at b.
+   
+   The advantage is that we simply avoid case (i), because the more ordered a
+   portion is the more the median of first-middle-last equals the median of the
+   whole portion.
+
+   Even though this method avoids the problem with semi-ordered portions as
+   described in (i), one could also think about choosing three random elements
+   rather than first-middle-last. There is always a possiblity to choose pivots
+   at the end of the portion. Also, we have to consider the performance of the
+   comparisons for the given element type to find the median, which might be
+   costly for complex keys.
+
+iii) Median of all the entries
+   This looks like the best idea on first sight, because it would lead to
+   partitions of (almost) equal size. The only inevitable problem is that we
+   need to order the portion first to find the median, which is therefore not
+   feasible.
+
+
+b) Quicksort the given array with the median of left-(left)middle-right pivot.
+   - (pivot) around the pivot before partitioning
+   - [pivot] around the pivot after partitioning
+   - values >= pivot are placed after the pivot
+
+   Given:   3, 17, 1, 5, 4, 20, 16, 3, 12, 7, 5, 31, 8, 10, 2 
+
+   Step 1:
+      Pivot out of {3,3,2} is 3.
+            3, 17, 1, 5, 4, 20, 16, (3), 12, 7, 5, 31, 8, 10, 2
+      After partitioning:
+            1, 2, [3], 3, 17, 5, 4, 20, 16, 12, 7, 5, 31, 8, 10 
+
+   Step 2:
+      Pivot left subarray: Size == 2, just compare and swap if needed.
+      Left subarray is sorted.
+      Pivot right subarray: Out of {3,16,10} is 10.
+            3, 17, 5, 4, 20, 16, 12, 7, 5, 31, 8, (10)
+      After partitioning:
+            3, 5, 4, 7, 5, 8, [10], 17, 20, 16, 12, 31
+
+   Step 3:
+      Pivot left subarray: Out of {3,4,8} is 4.
+      Left subarray: 3, 5, (4), 7, 5, 8
+      Left subarray after partitioning: 3, [4], 5, 7, 5, 8
+
+      Pivot right subarray: Out of {17,16,31} is 17.
+      Right subarray: (17), 20, 16, 12, 31
+      Right subarray after partitioning: 16, 12, [17], 20, 31
+
+      All remaining portions are now of size <= 4, therefore we can sort in one
+      step and receive the final sorted array:
+         1, 2, 3, 3, 4, 5, 5, 7, 8, 10, 12, 16, 17, 20, 31
