@@ -93,50 +93,84 @@ a) Inserting and deleting values x into a hash table of size T = 11 using
    sequence of hash functions is h(x,i) = (p(x) - i*s(x)) % T, with
    incrementing i (natural number) until an empty slot is found. The mod T at
    the end ensures to stay within the array bounds in circular fashion.
-   t marks a tombstone.
+   t marks a tombstone. I assume 'skipping left' means to use the secondary
+   hash to advance with left-circular steps.
 
    Hash table:
-   Slots        0  1  2  3  4  5  6  7  8  9  10 11
-               |  |  |  |  |  |  |  |  |  |  |  |  |
+   Slots        0  1  2  3  4  5  6  7  8  9  10
+               |  |  |  |  |  |  |  |  |  |  |  |
 
    Step 1: Insert 25732, p(x) = 8, s(x) = 3
-    0  1  2  3  4  5  6  7  8       9  10 11
-   |  |  |  |  |  |  |  |  | 25732 |  |  |  |
+    0  1  2  3  4  5  6  7  8       9  10
+   |  |  |  |  |  |  |  |  | 25732 |  |  |
 
    Step 2: Insert 41850, p(x) = 6, s(x) = 4
-    0  1  2  3  4  5  6       7  8       9  10 11
-   |  |  |  |  |  |  | 41850 |  | 25732 |  |  |  |
+    0  1  2  3  4  5  6       7  8       9  10
+   |  |  |  |  |  |  | 41850 |  | 25732 |  |  |
 
    Step 3: Insert 27119, p(x) = 8, s(x) = 2
-    0  1  2  3  4       5  6       7  8       9  10 11
-   |  |  |  |  | 27119 |  | 41850 |  | 25732 |  |  |  |
+    0  1  2  3  4       5  6       7  8       9  10
+   |  |  |  |  | 27119 |  | 41850 |  | 25732 |  |  |
 
    Step 4: Delete 41850, p(x) = 6, s(x) = 4
-    0  1  2  3  4       5  6   7  8       9  10 11
-   |  |  |  |  | 27119 |  | t |  | 25732 |  |  |  |
+    0  1  2  3  4       5  6   7  8       9  10
+   |  |  |  |  | 27119 |  | t |  | 25732 |  |  |
 
    Step 5: Insert 39721, p(x) = 0, s(x) = 3
-    0       1  2  3  4       5  6   7  8       9  10 11
-   | 39721 |  |  |  | 27119 |  | t |  | 25732 |  |  |  |
+    0       1  2  3  4       5  6   7  8       9  10
+   | 39721 |  |  |  | 27119 |  | t |  | 25732 |  |  |
 
    Step 6: Insert 46211, p(x) = 7, s(x) = 3
-    0       1  2  3  4       5  6   7       8        9  10 11
-   | 39721 |  |  |  | 27119 |  | t | 46211 | 25732  |  |  |  |
+    0       1  2  3  4       5  6   7       8        9  10
+   | 39721 |  |  |  | 27119 |  | t | 46211 | 25732  |  |  |
 
    Step 7: Insert 32054, p(x) = 7, s(x) = 1
-    0       1  2  3  4       5  6       7       8        9  10 11
-   | 39721 |  |  |  | 27119 |  | 32054 | 46211 | 25732  |  |  |  |
+    0       1  2  3  4       5  6       7       8        9  10
+   | 39721 |  |  |  | 27119 |  | 32054 | 46211 | 25732  |  |  |
 
    Step 8: Delete 25732, p(x) = 8, s(x) = 3
-    0       1  2  3  4       5  6       7       8   9  10 11
-   | 39721 |  |  |  | 27119 |  | 32054 | 46211 | t |  |  |  |
+    0       1  2  3  4       5  6       7       8   9  10
+   | 39721 |  |  |  | 27119 |  | 32054 | 46211 | t |  |  |
 
    Step 9: Insert 43416, p(x) = 4, s(x) = 5
-    0       1  2  3  4       5  6       7       8   9  10 11
-   | 39721 |  |  |  | 27119 |  | 32054 | 46211 | t |  |  | 43416 |
+    0       1  2  3  4       5  6       7       8   9  10
+   | 39721 |  |  |  | 27119 |  | 32054 | 46211 | t |  | 43416 |
 
    Step 9 represents the final hash table after the given instructions.
 
 b) Should the load factor of a hash table also account for tombstones?
    
+   The answer to this question is heavily depending on what a 'load factor' of
+   a hash table should be able to represent. To elaborate this a bit further I
+   will have a look at the terms occuring in the context of this question
+   first:
+   
+   To my knowledge the load factor 'a' of a hash table is defined as a = n/T,
+   with n being the current number of entries, and T being the size or
+   capacity of the table. Depending on the hashing method the load factor is
+   an important value to determine how efficient probing algorithms run or
+   whether they might not even terminate at all. It can also indicate when a
+   hash table size should be increased to ensure continuously good
+   performance.
 
+   Moreover, the use of tombstones serves at least two reasons. Deleting a
+   record must not stop any search performed, so that entries further down in
+   the chain are still found. The tombstone indicates that the look-up
+   algorithm is not allowed to terminate before having followed the process
+   chain to the end. This also applies for insertions to avoid duplicate
+   entries. On the other hand it ensures that the free slot can be used again
+   by another key.
+
+   That being said, the tombstones are not included in the load factor by
+   definition, but they indicate where performance could be enhanced by
+   reducing probing chains which are lengthened after mixed insertions and
+   deletions. With a load factor and its purpose to only indicate how full a
+   table is there is no need to include the tombstones in it, as a tombstone
+   represents a free slot.
+
+   I would suggest to handle the amount and distribution of tombstones
+   independently instead, as to implement some kind of internal reorganization
+   of tombstones (eg swapping them to the end of the chain) or hash table
+   rebuilding strategies when they reach an upper boundary that is likely to
+   cause performance downgrade. This could be summed up in another factor, so
+   that the original meaning of the load factor stays untouched.
