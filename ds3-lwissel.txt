@@ -79,3 +79,64 @@ b) Quicksort the given array with the median of left-(left)middle-right pivot.
       All remaining portions are now of size <= 4, therefore we can sort in one
       step and receive the final sorted array:
          1, 2, 3, 3, 4, 5, 5, 7, 8, 10, 12, 16, 17, 20, 31
+
+
+2) Hash tables
+
+a) Inserting and deleting values x into a hash table of size T = 11 using
+   double hashing. Let dn(x) yield digit n of x. Then:
+
+   Primary hash function   p(x) = (d2(x) + d4(x)) % 11
+   Secondary hash function s(x) = (d3(x) % 5) + 1
+
+   The secondary hash function should be used to skip leftwards, so the
+   sequence of hash functions is h(x,i) = (p(x) - i*s(x)) % T, with
+   incrementing i (natural number) until an empty slot is found. The mod T at
+   the end ensures to stay within the array bounds in circular fashion.
+   t marks a tombstone.
+
+   Hash table:
+   Slots        0  1  2  3  4  5  6  7  8  9  10 11
+               |  |  |  |  |  |  |  |  |  |  |  |  |
+
+   Step 1: Insert 25732, p(x) = 8, s(x) = 3
+    0  1  2  3  4  5  6  7  8       9  10 11
+   |  |  |  |  |  |  |  |  | 25732 |  |  |  |
+
+   Step 2: Insert 41850, p(x) = 6, s(x) = 4
+    0  1  2  3  4  5  6       7  8       9  10 11
+   |  |  |  |  |  |  | 41850 |  | 25732 |  |  |  |
+
+   Step 3: Insert 27119, p(x) = 8, s(x) = 2
+    0  1  2  3  4       5  6       7  8       9  10 11
+   |  |  |  |  | 27119 |  | 41850 |  | 25732 |  |  |  |
+
+   Step 4: Delete 41850, p(x) = 6, s(x) = 4
+    0  1  2  3  4       5  6   7  8       9  10 11
+   |  |  |  |  | 27119 |  | t |  | 25732 |  |  |  |
+
+   Step 5: Insert 39721, p(x) = 0, s(x) = 3
+    0       1  2  3  4       5  6   7  8       9  10 11
+   | 39721 |  |  |  | 27119 |  | t |  | 25732 |  |  |  |
+
+   Step 6: Insert 46211, p(x) = 7, s(x) = 3
+    0       1  2  3  4       5  6   7       8        9  10 11
+   | 39721 |  |  |  | 27119 |  | t | 46211 | 25732  |  |  |  |
+
+   Step 7: Insert 32054, p(x) = 7, s(x) = 1
+    0       1  2  3  4       5  6       7       8        9  10 11
+   | 39721 |  |  |  | 27119 |  | 32054 | 46211 | 25732  |  |  |  |
+
+   Step 8: Delete 25732, p(x) = 8, s(x) = 3
+    0       1  2  3  4       5  6       7       8   9  10 11
+   | 39721 |  |  |  | 27119 |  | 32054 | 46211 | t |  |  |  |
+
+   Step 9: Insert 43416, p(x) = 4, s(x) = 5
+    0       1  2  3  4       5  6       7       8   9  10 11
+   | 39721 |  |  |  | 27119 |  | 32054 | 46211 | t |  |  | 43416 |
+
+   Step 9 represents the final hash table after the given instructions.
+
+b) Should the load factor of a hash table also account for tombstones?
+   
+
