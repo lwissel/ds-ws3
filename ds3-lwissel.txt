@@ -15,7 +15,7 @@ i) Rightmost entry
    ordered (or reverse ordered) portions where choosing the right (left)-most
    key would end up in maximum performance setback. The algorithm would only
    partition the chosen element from the rest of the portion ending up with
-   worst-case O(n^2) behaviour.
+   much higher probability for worst-case O(n^2) behaviour.
 
 ii) Median of three (left, mid, right)
    The median of three elements {a, b, c} is defined as b, after ordering the
