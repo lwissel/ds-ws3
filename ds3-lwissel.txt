@@ -174,3 +174,25 @@ b) Should the load factor of a hash table also account for tombstones?
    rebuilding strategies when they reach an upper boundary that is likely to
    cause performance downgrade. This could be summed up in another factor, so
    that the original meaning of the load factor stays untouched.
+
+
+3)
+
+a) See PDF file
+   (a) The graph is not planar, because it contains K5.
+   (b) This graph is planar as shown.
+
+b) Dijkstra's algorithm operating on a directed graph
+
+   After five iterations the tight nodes are indeed A, B, C, D, E and the
+   estimated path lengths at that moment are F = 8, G = 10, H = 12. After
+   three more iterations the last node H becomes tight and the final path
+   lengths are F = 8, G = 9, H = 11. This was of course obtained by running
+   the algorithm. The question now is how to justify the numbers after
+   iteration step five, without actually running the algorithm. F = 8 is
+   obvious, as there is only one path to take at all. Since F has not been
+   visited yet we can only pick the A-C-E-G path to arrive at G, which
+   therefore yields G = 10. To estimate H we have to consider the three
+   possible routes to take due to the fact that G is not tight yet: A-B-H =
+   12, A-C-D-H = 13, A-B-D-H = 22 from which A-B-H is obviously the shortest
+   and therefore H = 12 is the answer.
